@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Main {
 
@@ -45,7 +46,7 @@ public class Main {
             writer.print(a.next());
         }
         writer.close();
-        System.out.println("Sequence generated!");
+        System.out.print("Sequence generated! ");
         return seqFromFile(workfolder.getPath() + "\\generated.txt");
     }
 
@@ -61,28 +62,86 @@ public class Main {
             System.out.println("Unable to create folder");
     }
 
+    private static int seqPeriod(List<Byte> list){
+
+        if (list.size() < 2)
+            return 1;
+
+        List<Byte> segment = new ArrayList<>();
+        segment.add(list.get(0));
+
+        int i = 0;
+        while (i < list.size() / segment.size() - 1) {
+
+            boolean repeating = true;
+
+            for (int j = 0; j < segment.size(); j++) {
+                if (!Objects.equals(segment.get(j), list.get((i+1) * segment.size() + j))) {
+                    repeating = false;
+                    break;
+                }
+            }
+
+            if (!repeating){
+                i = 0;
+                segment.add(list.get(segment.size()));
+            } else {
+                i += 1;
+            }
+        }
+        if (list.size() <= 2*segment.size())
+            return list.size();
+        else
+            return segment.size();
+    }
+
     public static void main(String[] args) {
 
         List<Byte> sequence;
 
         /*
-        *       Pi Test
+        *    Repeated Sequence Test
+        *
         * */
+        System.out.println("=== Cycled sequence testing ===");
+        createInstanceFolder("-Cy");
 
-        System.out.println("=== Pi testing ===");
-        createInstanceFolder("-Pi");
+        sequence = seqFromFile("opa.txt");
+        System.out.print("File read!");
+        System.out.println(" (Seq period = " + seqPeriod(sequence) + ")");
 
-        sequence = seqFromFile("pi");
-
-        System.out.println("\nTest 1 is in process...");
+        System.out.println("Test 1 is in process...");
         Tests.universalMaurer(workfolder, sequence);
         System.out.println("Test 1 is complete!");
 
-        System.out.println("\nTest 2 is in process...");
+        System.out.println("Test 2 is in process...");
         Tests.randomExcursionsVariant(workfolder, sequence);
         System.out.println("Test 2 is complete!");
 
-        System.out.println("\nTest 3 is in process...");
+        System.out.println("Test 3 is in process...");
+        Tests.approximateEntropy(workfolder, sequence);
+        System.out.println("Test 3 is complete!");
+
+        /*
+        *       Pi Test
+        * */
+
+        System.out.println("\n=== Pi testing ===");
+        createInstanceFolder("-Pi");
+
+        sequence = seqFromFile("pi");
+        System.out.print("File read!");
+        System.out.println(" (Seq period = " + seqPeriod(sequence) + ")");
+
+        System.out.println("Test 1 is in process...");
+        Tests.universalMaurer(workfolder, sequence);
+        System.out.println("Test 1 is complete!");
+
+        System.out.println("Test 2 is in process...");
+        Tests.randomExcursionsVariant(workfolder, sequence);
+        System.out.println("Test 2 is complete!");
+
+        System.out.println("Test 3 is in process...");
         Tests.approximateEntropy(workfolder, sequence);
         System.out.println("Test 3 is complete!");
 
@@ -94,16 +153,17 @@ public class Main {
         createInstanceFolder("-DefJava");
 
         sequence = generateMillionBits(DefaultGenerator.factory());
+        System.out.println(" (Seq period = " + seqPeriod(sequence) + ")");
 
-        System.out.println("\nTest 1 is in process...");
+        System.out.println("Test 1 is in process...");
         Tests.universalMaurer(workfolder, sequence);
         System.out.println("Test 1 is complete!");
 
-        System.out.println("\nTest 2 is in process...");
+        System.out.println("Test 2 is in process...");
         Tests.randomExcursionsVariant(workfolder, sequence);
         System.out.println("Test 2 is complete!");
 
-        System.out.println("\nTest 3 is in process...");
+        System.out.println("Test 3 is in process...");
         Tests.approximateEntropy(workfolder, sequence);
         System.out.println("Test 3 is complete!");
 
@@ -116,16 +176,17 @@ public class Main {
         createInstanceFolder("-BBS");
 
         sequence = generateMillionBits(BBSGenerator.factory());
+        System.out.println(" (Seq period = " + seqPeriod(sequence) + ")");
 
-        System.out.println("\nTest 1 is in process...");
+        System.out.println("Test 1 is in process...");
         Tests.universalMaurer(workfolder, sequence);
         System.out.println("Test 1 is complete!");
 
-        System.out.println("\nTest 2 is in process...");
+        System.out.println("Test 2 is in process...");
         Tests.randomExcursionsVariant(workfolder, sequence);
         System.out.println("Test 2 is complete!");
 
-        System.out.println("\nTest 3 is in process...");
+        System.out.println("Test 3 is in process...");
         Tests.approximateEntropy(workfolder, sequence);
         System.out.println("Test 3 is complete!");
     }

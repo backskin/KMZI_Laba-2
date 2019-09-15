@@ -131,7 +131,7 @@ class Tests {
 
     static void approximateEntropy(File folder, List<Byte> bitSequence)
     {
-        int m = 5;
+        int m = 10;
         int n = bitSequence.size();
         double[] ApEn = new double[2];
         HashMap<Integer, Integer> P = new HashMap<>();
@@ -144,47 +144,43 @@ class Tests {
         writeToStats("\t\t--------------------------------------------\n");
         writeToStats("\t\t(a) m (block length)    = " + m + "\n");
 
-        double v = log(n) / log(2) - 5;
-        if (m > (int) v) {
-            writeToStats("\n\t\tNote: The blockSize = " + m + " exceeds recommended value of " + (int) v);
+        int v = (int) (log(n) / log(2)) - 5;
+        if (m > v) {
+            writeToStats("\n\t\tNote: The blockSize = " + m + " exceeds recommended value of " + v);
             writeToStats("\t\tResults are inaccurate!\n");
             writeToStats("\t\t--------------------------------------------\n");
         }
 
-        int r = 0;
+        for (int iglobal = 0; iglobal < 2; iglobal++ ) {
 
-        for (int blockSize = m; blockSize <= m + 1; blockSize++ ) {
-
-            if ( blockSize == 0 ) {
+            if ( m + iglobal == 0 ) {
                 ApEn[0] = 0.00;
-                r++;
                 continue;
             }
 
-            int powLen = (int) pow(2, blockSize + 1) - 1;
+            int powLen = (int) pow(2, m + iglobal + 1) - 1;
 
-            for (int i = 1; i < powLen - 1; i++)
-                P.put(i, 0);
-            for (int i = 0; i < n; i++) { /* COMPUTE FREQUENCY */
+            for (int j = 1; j < powLen - 1; j++)
+                P.put(j, 0);
+            for (int i1 = 0; i1 < n; i1++) { /* COMPUTE FREQUENCY */
                 int k = 1;
-                for (int j = 0; j < blockSize; j++) {
+                for (int i2 = 0; i2 < m + iglobal; i2++) {
                     k <<= 1;
-                    if ( (int)bitSequence.get((i+j) % n) == 1 )
+                    if ( (int)bitSequence.get((i1 + i2) % n) == 1 )
                         k++;
                 }
                 P.put(k-1, (P.get(k-1) == null ? 0 : P.get(k-1)) +1);
             }
             /* DISPLAY FREQUENCY */
             double sum = 0.0;
-            int index = (int) pow(2, blockSize) - 1;
-            for ( int i = 0; i < (int) pow(2, blockSize); i++ ) {
+            int index = (int) pow(2, m + iglobal) - 1;
+            for ( int i = 0; i < (int) pow(2, m + iglobal); i++ ) {
                 if ( P.get(index) != null && P.get(index) > 0 )
                     sum += P.get(index)*log(P.get(index)/ (double) n);
                 index++;
             }
-            sum /= n;
-            ApEn[r] = sum;
-            r++;
+            sum /= 0.0 + n;
+            ApEn[iglobal] = sum;
         }
         double apen = ApEn[0] - ApEn[1];
         double chi_squared = 2.0 * n * (log(2) - apen);

@@ -1,5 +1,7 @@
 package com.backsy;
 
+import com.sun.deploy.security.WSeedGenerator;
+
 import java.util.Random;
 
 import static java.lang.Math.abs;
@@ -32,12 +34,18 @@ public class BBSGenerator implements RandomBitGenerator {
         return true;
     }
 
+    private static Random r = new Random();
+
     private static int prime() {
 
-        int border = (new Random()).nextInt(100000);
+        int border = r.nextInt(10000) + 25;
         int last = 3;
-        for (int i = 3; i < border; i++) {
-            if (isPrime(i)) last = i;
+        int k = 0;
+        while(k < border) {
+            last++;
+            if (isPrime(last)) {
+                k++;
+            }
         }
         return last;
     }
@@ -57,8 +65,8 @@ public class BBSGenerator implements RandomBitGenerator {
         }
         M =  (long) p * q;
         long s = 0;
-        while (s == 0 || gcd(s, M) != 1){
-            s = abs((new Random()).nextLong()) % (M-1);
+        while (s == 0 || s >= M || gcd(s, M) != 1){
+            s = prime();
         }
         s = (long) pow(s, 2) % M;
         X = (long) pow(s, 2) % M;
@@ -67,8 +75,8 @@ public class BBSGenerator implements RandomBitGenerator {
     @Override
     public int next(){
 
-        int result = (int)(X % 2);
-        X = ((long) pow(X,2)) % M;
+        int result = (int) (X % 2);
+        X = (long) pow(X,2) % M;
         return result;
     }
 

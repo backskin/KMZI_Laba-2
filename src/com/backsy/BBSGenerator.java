@@ -1,10 +1,8 @@
 package com.backsy;
 
-import com.sun.deploy.security.WSeedGenerator;
 
 import java.util.Random;
 
-import static java.lang.Math.abs;
 import static java.lang.StrictMath.pow;
 
 public class BBSGenerator implements RandomBitGenerator {
